@@ -6,8 +6,9 @@ contract AccessControl {
     address public pendingAdmin;
     bool public paused;
 
-    error HasPaused(bool paused);
+    error HasPaused(bool _paused);
     error NullAddress();
+    error NotAdmin();
     error NotPendingAdmin();
 
     event AdminChange(address newAdmin, address oldAdmin);
@@ -15,17 +16,21 @@ contract AccessControl {
     event Unpause(address account);
 
     modifier onlyAuth() {
-        require(msg.sender == admin);
+        if (msg.sender != admin) revert NotAdmin();
         _;
     }
 
     modifier whenNotPaused() {
-        if (paused) revert HasPaused(true);
+        if (paused) revert HasPaused({
+            _paused: true
+        });
         _;
     }
 
     modifier whenPaused() {
-        if (!paused) revert HasPaused(false);
+        if (!paused) revert HasPaused({
+            _paused: false
+        });
         _;
     }
 
