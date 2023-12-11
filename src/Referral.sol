@@ -7,12 +7,13 @@ contract Referral is AccessControl {
     mapping(address comp => bool authed) public setters; // authorized referral setters
     mapping(address recipient => address referrer) public referrers; // referral giver addresses
 
+    error NotSetter();
     error SelfReferral();
 
     event ReferrerChange(address newReferrer, address oldReferrer);
 
     modifier onlySetter() {
-        require(setters[msg.sender]);
+        if (setters[msg.sender] != true) revert NotSetter();
         _;
     }
 
