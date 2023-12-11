@@ -1,0 +1,24 @@
+{
+  "name": "union-referral",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "scripts": {
+    "test": "forge test -vvv",
+    "compile": "forge build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unioncredit/union-referral.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/unioncredit/union-referral/issues"
+  },
+  "homepage": "https://github.com/unioncredit/union-referral#readme"
+}
