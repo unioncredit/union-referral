@@ -4,8 +4,8 @@ pragma solidity 0.8.19;
 import "./AccessControl.sol";
 
 contract Referral is AccessControl {
-    mapping(address comp => bool authed) setters; // authorized referral setters
-    mapping(address recipient => address referrer) referrers; // referral giver addresses
+    mapping(address comp => bool authed) public setters; // authorized referral setters
+    mapping(address recipient => address referrer) public referrers; // referral giver addresses
 
     error SelfReferral();
 
