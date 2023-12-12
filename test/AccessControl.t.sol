@@ -1,15 +1,17 @@
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import {TestWrapper} from "./TestWrapper.sol";
-import {AccessControl} from "src/AccessControl.sol";
+import {AccessControl, AccessControlMock} from "src/mocks/AccessControlMock.sol";
 
 contract TestAccessControl is TestWrapper {
-    AccessControl public accessControl;
+    AccessControlMock public accessControl;
     address public admin;
+
     function setUp() public virtual {
         admin = address(1);
         deployMocks();
-        accessControl = new AccessControl(admin);
+        accessControl = new AccessControlMock(admin);
     }
 
     function testCannotSetPendingAdminNonAdmin() public {
