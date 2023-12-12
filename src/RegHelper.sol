@@ -46,12 +46,22 @@ contract RegHelper is AccessControl {
         address _admin,
         address _union,
         address _userManager,
-        address _referral
+        address _referral,
+        address payable _regFeeRecipient,
+        uint _rebateFee,
+        uint _regFee
     ) AccessControl(_admin) {
+        if(_regFeeRecipient == address(0)) revert NullAddress();
         union = _union;
         userManager = _userManager;
         referral = _referral;
         IErc20(union).approve(userManager, type(uint256).max);
+        regFeeRecipient = _regFeeRecipient;
+        rebateFee = _rebateFee;
+        regFee = _regFee;
+        emit RegFeeRecipientChange(regFeeRecipient, address(0));
+        emit RebateFeeChange(rebateFee, 0);
+        emit RegFeeChange(regFee, 0);
     }
 
     receive() external payable {}
@@ -59,6 +69,7 @@ contract RegHelper is AccessControl {
     function setRegFeeRecipient(
         address payable newRecipient
     ) external onlyAuth {
+        if(newRecipient == address(0)) revert NullAddress();
         address payable oldRecipient = regFeeRecipient;
         regFeeRecipient = newRecipient;
         emit RegFeeRecipientChange(regFeeRecipient, oldRecipient);
@@ -87,7 +98,7 @@ contract RegHelper is AccessControl {
             IUserManager(userManager).newMemberFee()
         ) revert NotEnoughBalance();
         // make sure the new user has enough ETH
-        if (msg.value < regFee + rebateFee) revert NotEnoughFee(msg.value);
+        if (msg.value < regFee + rebateFee) revert NotEnoughFee({fee: msg.value});
         if (regFee > 0 || rebateFee > 0) {
             if (referrer != address(0) && rebateFee > 0) {
                 // send the rebate to the referrer
