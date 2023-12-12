@@ -4,7 +4,7 @@ pragma solidity 0.8.19;
 /// @title Access Control Contract
 /// @notice This contract provides basic access control with an admin role, pause functionality, and pending admin transfer.
 /// @dev The contract uses role-based permissioning for administrative actions and pausing functionality.
-contract AccessControl {
+abstract contract AccessControl {
     /// @notice Address of the current admin
     address public admin;
 
