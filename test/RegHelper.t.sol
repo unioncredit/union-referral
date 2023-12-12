@@ -98,7 +98,7 @@ contract TestRegHelper is TestWrapper {
     }
 
     function testRegister(address newUser, address payable referrer) public {
-        vm.assume(newUser != referrer);
+        vm.assume(newUser != referrer && referrer != address(0));
         vm.startPrank(admin);
         unionTokenMock.mint(1e20);
         unionTokenMock.transfer(address(regHelper), 1e20);
