@@ -1,24 +1,33 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import "./AccessControl.sol";
 
+/// @title User Manager Interface
+/// @notice Interface for user management operations.
 interface IUserManager {
     function registerMember(address) external;
 
     function newMemberFee() external view returns (uint256);
 }
 
+/// @title ERC20 Token Interface
+/// @notice Interface for basic ERC20 token operations.
 interface IErc20 {
     function balanceOf(address) external view returns (uint256);
 
     function approve(address, uint256) external returns (bool);
 }
 
+/// @title Referral Interface
+/// @notice Interface for managing referral relationships.
 interface IReferral {
     function setReferrer(address user, address referrer) external;
 }
 
+/// @title UNION Member Registration Helper Contract
+/// @notice This contract facilitates user registration and referral in the UNION protocol.
+/// @dev Extends from the AccessControl contract for role-based permissions.
 contract RegHelper is AccessControl {
     address public union;
     address public userManager;
@@ -28,9 +37,11 @@ contract RegHelper is AccessControl {
     uint public rebateFee;
     uint public regFee;
 
+    /// Custom errors for specific revert cases.
     error NotEnoughBalance();
     error NotEnoughFee(uint256 fee);
 
+    /// Events for logging state changes and operations.
     event RegFeeRecipientChange(address newRecipient, address oldRecipient);
     event RebateFeeChange(uint newRebateFee, uint oldRebateFee);
     event RegFeeChange(uint newRegFee, uint oldRegFee);
@@ -42,6 +53,11 @@ contract RegHelper is AccessControl {
         uint rebateFee
     );
 
+    /// @notice Constructor to initialize the contract with necessary addresses.
+    /// @param _admin Address of the initial admin.
+    /// @param _union Address of the UNION token.
+    /// @param _userManager Address of the user manager contract.
+    /// @param _referral Address of the referral contract.
     constructor(
         address _admin,
         address _union,
@@ -64,55 +80,71 @@ contract RegHelper is AccessControl {
         emit RegFeeChange(regFee, 0);
     }
 
+    /// @notice Fallback receive function to accept ETH.
     receive() external payable {}
 
+    /// @notice Sets the recipient for registration fees.
+    /// @param newRecipient The address of the new fee recipient.
     function setRegFeeRecipient(
         address payable newRecipient
     ) external onlyAuth {
         if(newRecipient == address(0)) revert NullAddress();
         address payable oldRecipient = regFeeRecipient;
         regFeeRecipient = newRecipient;
-        emit RegFeeRecipientChange(regFeeRecipient, oldRecipient);
+        emit RegFeeRecipientChange(newRecipient, oldRecipient);
     }
 
+    /// @notice Sets the rebate fee amount.
+    /// @param newRebateFee The new rebate fee amount.
     function setRebateFee(uint newRebateFee) external onlyAuth {
         uint oldRebateFee = rebateFee;
         rebateFee = newRebateFee;
-        emit RebateFeeChange(rebateFee, oldRebateFee);
+        emit RebateFeeChange(newRebateFee, oldRebateFee);
     }
 
+    /// @notice Sets the registration fee amount.
+    /// @param newRegFee The new registration fee amount.
     function setRegFee(uint newRegFee) external onlyAuth {
         uint oldRegFee = regFee;
         regFee = newRegFee;
-        emit RegFeeChange(regFee, oldRegFee);
+        emit RegFeeChange(newRegFee, oldRegFee);
     }
 
+    /// @notice Registers a new user, sets their referrer, and handles fees.
+    /// @param newUser The address of the user to be registered.
+    /// @param referrer The address of the referrer.
     function register(
         address newUser,
         address payable referrer
     ) external payable whenNotPaused {
         IReferral(referral).setReferrer(newUser, referrer);
         if (
-            // make sure we have enough UNION tokens to pay for the member registration
             IErc20(union).balanceOf(address(this)) <
             IUserManager(userManager).newMemberFee()
         ) revert NotEnoughBalance();
-        // make sure the new user has enough ETH
-        if (msg.value < regFee + rebateFee) revert NotEnoughFee({fee: msg.value});
-        if (regFee > 0 || rebateFee > 0) {
-            if (referrer != address(0) && rebateFee > 0) {
-                // send the rebate to the referrer
+
+
+        if (msg.value < regFee + rebateFee) revert NotEnoughFee(msg.value);
+
+        if (msg.value > 0) {
+            // only register member when the registrant supplies fees
+
+            if (rebateFee > 0 && referrer != address(0)) {
+
                 referrer.transfer(rebateFee);
-                // send the rest to the fee recipient
                 regFeeRecipient.transfer(msg.value - rebateFee);
             } else {
-                // send all to the fee recipient if no referrer
                 regFeeRecipient.transfer(msg.value);
             }
+
+            IUserManager(userManager).registerMember(newUser);
+            emit Register(
+                newUser,
+                regFeeRecipient,
+                referrer,
+                msg.value,
+                rebateFee
+            );
         }
-
-        IUserManager(userManager).registerMember(newUser);
-
-        emit Register(newUser, regFeeRecipient, referrer, msg.value, rebateFee);
     }
 }
