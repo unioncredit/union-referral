@@ -40,4 +40,10 @@ contract UnionTokenMock {
         balanceOf[msg.sender] -= amount;
         totalSupply -= amount;
     }
+
+    function burnFrom(address sender, uint amount) external {
+        allowance[sender][msg.sender] -= amount;
+        balanceOf[sender] -= amount;
+        totalSupply -= amount;
+    }
 }
