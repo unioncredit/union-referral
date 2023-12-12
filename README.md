@@ -1,5 +1,8 @@
 # UNION-Referral
 
+[![test](https://github.com/unioncredit/union-referral/actions/workflows/test.yml/badge.svg)](https://github.com/unioncredit/union-referral/actions/workflows/test.yml)
+[![codecov](https://codecov.io/gh/unioncredit/union-referral/graph/badge.svg?token=F6XWY7TPDB)](https://codecov.io/gh/unioncredit/union-referral)
+
 UNION Referral is a smart contract suite designed to boost the UNION community through a robust referral system. It streamlines community growth by seamlessly integrating access control, referral tracking, and member registration processes.
 
 ## Install
