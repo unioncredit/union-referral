@@ -128,23 +128,22 @@ contract RegHelper is AccessControl {
 
         if (msg.value > 0) {
             // only register member when the registrant supplies fees
-
             if (rebateFee > 0 && referrer != address(0)) {
 
                 referrer.transfer(rebateFee);
                 regFeeRecipient.transfer(msg.value - rebateFee);
             } else {
                 regFeeRecipient.transfer(msg.value);
-            }
-
-            IUserManager(userManager).registerMember(newUser);
-            emit Register(
-                newUser,
-                regFeeRecipient,
-                referrer,
-                msg.value,
-                rebateFee
-            );
+            }    
         }
+
+        IUserManager(userManager).registerMember(newUser);
+        emit Register(
+            newUser,
+            regFeeRecipient,
+            referrer,
+            msg.value,
+            rebateFee
+        );
     }
 }
