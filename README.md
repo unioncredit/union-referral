@@ -72,7 +72,7 @@ optimism-goerli
 ```
 
 Referral: 0x40006f57bf781be997da9c096668579a044f140a
-RegHelper: 0x1f506d05c3ab917610a2bd4ed4e7afbdb4ebecc1
+RegisterHelper: 0x1f506d05c3ab917610a2bd4ed4e7afbdb4ebecc1
 
 ```
 
