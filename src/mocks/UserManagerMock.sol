@@ -1,6 +1,10 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+interface IErc20 {
+    function burnFrom(address,uint) external;
+}
+
 contract UserManagerMock {
     uint256 public constant MAX_TRUST_LIMIT = 100;
     uint256 public constant MAX_STAKE_AMOUNT = 1000e18;
@@ -77,16 +81,9 @@ contract UserManagerMock {
 
     function cancelVouch(address staker, address borrower) external {}
 
-    function registerMemberWithPermit(
-        address newMember,
-        uint256 value,
-        uint256 deadline,
-        uint8 v,
-        bytes32 r,
-        bytes32 s
-    ) public {}
-
-    function registerMember(address newMember) public {}
+    function registerMember(address) public {
+        IErc20(stakingToken).burnFrom(msg.sender, newMemberFee);
+    }
 
     function stake(uint96 amount) public {
         balances[msg.sender] += amount;
