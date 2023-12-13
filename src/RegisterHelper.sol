@@ -28,7 +28,7 @@ interface IReferral {
 /// @title UNION Member Registration Helper Contract
 /// @notice This contract facilitates user registration and referral in the UNION protocol.
 /// @dev Extends from the AccessControl contract for role-based permissions.
-contract RegHelper is AccessControl {
+contract RegisterHelper is AccessControl {
     address public union;
     address public userManager;
     address public referral;
