@@ -133,16 +133,16 @@ contract RegHelper is AccessControl {
                 regFeeRecipient.transfer(msg.value - rebateFee);
             } else {
                 regFeeRecipient.transfer(msg.value);
-            }
-
-            IUserManager(userManager).registerMember(newUser);
-            emit Register(
-                newUser,
-                regFeeRecipient,
-                referrer,
-                msg.value,
-                rebateFee
-            );
+            }    
         }
+
+        IUserManager(userManager).registerMember(newUser);
+        emit Register(
+            newUser,
+            regFeeRecipient,
+            referrer,
+            msg.value,
+            rebateFee
+        );
     }
 }
