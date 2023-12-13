@@ -87,16 +87,6 @@ contract TestRegisterHelper is TestWrapper {
         registerHelper.register(address(4), payable(address(5)));
     }
 
-    function testRegisterWhenReferrerIsZero(address newUser) public {
-        vm.assume(newUser != address(0));
-        vm.startPrank(admin);
-        unionTokenMock.mint(1e20);
-        unionTokenMock.transfer(address(registerHelper), 1e20);
-        vm.stopPrank();
-        registerHelper.register{value: 2e18}(newUser, payable(address(0)));
-        assertEq(regFeeRecipient.balance,2e18);
-    }
-
     function testRegisterWhenFeeIsZero() public {
         address newUser = address(4);
         address payable referrer = payable(address(5));
@@ -108,6 +98,29 @@ contract TestRegisterHelper is TestWrapper {
         vm.stopPrank();
         registerHelper.register(newUser, referrer);
         assertEq(regFeeRecipient.balance,0);
+        assertEq(referrer.balance,0);
+    }
+
+    function testRegisterWhenReferrerIsZero(address newUser) public {
+        vm.assume(newUser != address(0));
+        vm.startPrank(admin);
+        unionTokenMock.mint(1e20);
+        unionTokenMock.transfer(address(registerHelper), 1e20);
+        vm.stopPrank();
+        registerHelper.register{value: 2e18}(newUser, payable(address(0)));
+        assertEq(regFeeRecipient.balance,2e18);
+    }
+
+    function testRegisterWhenRebateFeeIsZero() public {
+        address newUser = address(4);
+        address payable referrer = payable(address(5));
+        vm.startPrank(admin);
+        registerHelper.setRebateFee(0);
+        unionTokenMock.mint(1e20);
+        unionTokenMock.transfer(address(registerHelper), 1e20);
+        vm.stopPrank();
+        registerHelper.register{value: 2e18}(newUser, referrer);
+        assertEq(regFeeRecipient.balance,2e18);
         assertEq(referrer.balance,0);
     }
 
