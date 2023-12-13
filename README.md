@@ -42,14 +42,38 @@ forge test
 
 The following modifiers are also available:
 
-- Level 2 (-vv): Logs emitted during tests are also displayed.
-- Level 3 (-vvv): Stack traces for failing tests are also displayed.
-- Level 4 (-vvvv): Stack traces for all tests are displayed, and setup traces for failing tests are displayed.
-- Level 5 (-vvvvv): Stack traces and setup traces are always displayed.
+-   Level 2 (-vv): Logs emitted during tests are also displayed.
+-   Level 3 (-vvv): Stack traces for failing tests are also displayed.
+-   Level 4 (-vvvv): Stack traces for all tests are displayed, and setup traces for failing tests are displayed.
+-   Level 5 (-vvvvv): Stack traces and setup traces are always displayed.
 
 To profile gas usage:
 
 ```
 forge test --gas-report
 forge snapshot
+```
+
+## Deploy
+
+```
+forge create --rpc-url <your_rpc_url> \
+    --constructor-args <arg1> <arg2> ... \
+    --private-key <your_private_key> \
+    --etherscan-api-key <your_etherscan_api_key> \
+    --verify \
+    src/ContractName.sol:ContractName
+```
+
+## Deployed
+
+```
+optimism-goerli
+```
+
+Referral: 0x40006f57bf781be997da9c096668579a044f140a
+RegHelper: 0x1f506d05c3ab917610a2bd4ed4e7afbdb4ebecc1
+
+```
+
 ```
