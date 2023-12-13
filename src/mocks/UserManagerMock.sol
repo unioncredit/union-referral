@@ -1,7 +1,6 @@
 //SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
-
 interface IErc20 {
     function burnFrom(address,uint) external;
 }
