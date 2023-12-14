@@ -29,9 +29,9 @@ interface IReferral {
 /// @notice This contract facilitates user registration and referral in the UNION protocol.
 /// @dev Extends from the AccessControl contract for role-based permissions.
 contract RegisterHelper is AccessControl {
-    address public union;
-    address public userManager;
-    address public referral;
+    address public immutable union;
+    address public immutable userManager;
+    address public immutable referral;
     address payable public regFeeRecipient;
 
     uint public rebateFee;
@@ -45,13 +45,7 @@ contract RegisterHelper is AccessControl {
     event RegFeeRecipientChange(address newRecipient, address oldRecipient);
     event RebateFeeChange(uint newRebateFee, uint oldRebateFee);
     event RegFeeChange(uint newRegFee, uint oldRegFee);
-    event Register(
-        address newUser,
-        address regFeeRecipient,
-        address referrer,
-        uint fee,
-        uint rebateFee
-    );
+    event Register(address newUser, address regFeeRecipient, address referrer, uint fee, uint rebateFee);
 
     /// @notice Constructor to initialize the contract with necessary addresses.
     /// @param _admin Address of the initial admin.
@@ -67,7 +61,7 @@ contract RegisterHelper is AccessControl {
         uint _rebateFee,
         uint _regFee
     ) AccessControl(_admin) {
-        if(_regFeeRecipient == address(0)) revert NullAddress();
+        if (_regFeeRecipient == address(0)) revert NullAddress();
         union = _union;
         userManager = _userManager;
         referral = _referral;
@@ -85,10 +79,8 @@ contract RegisterHelper is AccessControl {
 
     /// @notice Sets the recipient for registration fees.
     /// @param newRecipient The address of the new fee recipient.
-    function setRegFeeRecipient(
-        address payable newRecipient
-    ) external onlyAuth {
-        if(newRecipient == address(0)) revert NullAddress();
+    function setRegFeeRecipient(address payable newRecipient) external onlyAuth {
+        if (newRecipient == address(0)) revert NullAddress();
         address payable oldRecipient = regFeeRecipient;
         regFeeRecipient = newRecipient;
         emit RegFeeRecipientChange(newRecipient, oldRecipient);
@@ -113,16 +105,10 @@ contract RegisterHelper is AccessControl {
     /// @notice Registers a new user, sets their referrer, and handles fees.
     /// @param newUser The address of the user to be registered.
     /// @param referrer The address of the referrer.
-    function register(
-        address newUser,
-        address payable referrer
-    ) external payable whenNotPaused {
+    function register(address newUser, address payable referrer) external payable whenNotPaused {
         IReferral(referral).setReferrer(newUser, referrer);
-        if (
-            IErc20(union).balanceOf(address(this)) <
-            IUserManager(userManager).newMemberFee()
-        ) revert NotEnoughBalance();
-
+        if (IErc20(union).balanceOf(address(this)) < IUserManager(userManager).newMemberFee())
+            revert NotEnoughBalance();
 
         if (msg.value < regFee + rebateFee) revert NotEnoughFee(msg.value);
 
@@ -133,16 +119,10 @@ contract RegisterHelper is AccessControl {
                 regFeeRecipient.transfer(msg.value - rebateFee);
             } else {
                 regFeeRecipient.transfer(msg.value);
-            }    
+            }
         }
 
         IUserManager(userManager).registerMember(newUser);
-        emit Register(
-            newUser,
-            regFeeRecipient,
-            referrer,
-            msg.value,
-            rebateFee
-        );
+        emit Register(newUser, regFeeRecipient, referrer, msg.value, rebateFee);
     }
 }
