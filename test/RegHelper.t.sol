@@ -11,20 +11,28 @@ contract TestRegisterHelper is TestWrapper {
     address public admin;
     address public comp;
     address payable public regFeeRecipient;
-    uint public rebateFee;
+    uint public rebate;
     uint public regFee;
 
     function setUp() public virtual {
         admin = address(1);
         comp = address(2);
         regFeeRecipient = payable(address(3));
-        rebateFee = 1e18;
+        rebate = 1e18;
         regFee = 1e18;
         deployMocks();
         referral = new Referral(admin, comp);
-        registerHelper = new RegisterHelper(admin, address(unionTokenMock), address(userManagerMock), address(referral), regFeeRecipient, rebateFee, regFee);
+        registerHelper = new RegisterHelper(
+            admin,
+            address(unionTokenMock),
+            address(userManagerMock),
+            address(referral),
+            regFeeRecipient,
+            rebate,
+            regFee
+        );
         vm.prank(admin);
-        referral.changeSetter(address(registerHelper),true);
+        referral.changeSetter(address(registerHelper), true);
     }
 
     function testCannotSetRegFeeRecipientNonAdmin() public {
@@ -44,17 +52,17 @@ contract TestRegisterHelper is TestWrapper {
         assertEq(registerHelper.regFeeRecipient(), newRecipient);
     }
 
-    function testCannotSetRebateFeeNonAdmin() public {
+    function testCannotSetRebateNonAdmin() public {
         vm.expectRevert(AccessControl.NotAdmin.selector);
-        registerHelper.setRebateFee(2e18);
+        registerHelper.setRebate(2e18);
     }
 
-    function testSetRebateFee(uint newRebateFee) public {
+    function testSetRebate(uint newRebate) public {
         vm.prank(admin);
-        registerHelper.setRebateFee(newRebateFee);
-        assertEq(registerHelper.rebateFee(), newRebateFee);
+        registerHelper.setRebate(newRebate);
+        assertEq(registerHelper.rebate(), newRebate);
     }
-    
+
     function testCannotSetRegFeeNonAdmin() public {
         vm.expectRevert(AccessControl.NotAdmin.selector);
         registerHelper.setRegFee(2e18);
@@ -77,7 +85,7 @@ contract TestRegisterHelper is TestWrapper {
         vm.expectRevert(RegisterHelper.NotEnoughBalance.selector);
         registerHelper.register(address(4), payable(address(5)));
     }
-    
+
     function testCannotRegisterWhenNotEnoughFee() public {
         vm.startPrank(admin);
         unionTokenMock.mint(1e20);
@@ -92,13 +100,13 @@ contract TestRegisterHelper is TestWrapper {
         address payable referrer = payable(address(5));
         vm.startPrank(admin);
         registerHelper.setRegFee(0);
-        registerHelper.setRebateFee(0);
+        registerHelper.setRebate(0);
         unionTokenMock.mint(1e20);
         unionTokenMock.transfer(address(registerHelper), 1e20);
         vm.stopPrank();
         registerHelper.register(newUser, referrer);
-        assertEq(regFeeRecipient.balance,0);
-        assertEq(referrer.balance,0);
+        assertEq(regFeeRecipient.balance, 0);
+        assertEq(referrer.balance, 0);
     }
 
     function testRegisterWhenReferrerIsZero(address newUser) public {
@@ -108,20 +116,20 @@ contract TestRegisterHelper is TestWrapper {
         unionTokenMock.transfer(address(registerHelper), 1e20);
         vm.stopPrank();
         registerHelper.register{value: 2e18}(newUser, payable(address(0)));
-        assertEq(regFeeRecipient.balance,2e18);
+        assertEq(regFeeRecipient.balance, 2e18);
     }
 
-    function testRegisterWhenRebateFeeIsZero() public {
+    function testRegisterWhenRebateIsZero() public {
         address newUser = address(4);
         address payable referrer = payable(address(5));
         vm.startPrank(admin);
-        registerHelper.setRebateFee(0);
+        registerHelper.setRebate(0);
         unionTokenMock.mint(1e20);
         unionTokenMock.transfer(address(registerHelper), 1e20);
         vm.stopPrank();
         registerHelper.register{value: 2e18}(newUser, referrer);
-        assertEq(regFeeRecipient.balance,2e18);
-        assertEq(referrer.balance,0);
+        assertEq(regFeeRecipient.balance, 2e18);
+        assertEq(referrer.balance, 0);
     }
 
     function testRegister() public {
@@ -132,7 +140,7 @@ contract TestRegisterHelper is TestWrapper {
         unionTokenMock.transfer(address(registerHelper), 1e20);
         vm.stopPrank();
         registerHelper.register{value: 2e18}(newUser, referrer);
-        assertEq(regFeeRecipient.balance,1e18);
-        assertEq(referrer.balance,1e18);
+        assertEq(regFeeRecipient.balance, 1e18);
+        assertEq(referrer.balance, 1e18);
     }
 }
