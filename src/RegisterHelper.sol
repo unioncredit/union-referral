@@ -34,7 +34,7 @@ contract RegisterHelper is AccessControl {
     address public immutable referral;
     address payable public regFeeRecipient;
 
-    uint public rebateFee;
+    uint public rebate;
     uint public regFee;
 
     /// Custom errors for specific revert cases.
@@ -43,9 +43,9 @@ contract RegisterHelper is AccessControl {
 
     /// Events for logging state changes and operations.
     event RegFeeRecipientChange(address newRecipient, address oldRecipient);
-    event RebateFeeChange(uint newRebateFee, uint oldRebateFee);
+    event RebateChange(uint newRebate, uint oldRebate);
     event RegFeeChange(uint newRegFee, uint oldRegFee);
-    event Register(address newUser, address regFeeRecipient, address referrer, uint fee, uint rebateFee);
+    event Register(address newUser, address regFeeRecipient, address referrer, uint fee, uint rebate);
 
     /// @notice Constructor to initialize the contract with necessary addresses.
     /// @param _admin Address of the initial admin.
@@ -58,7 +58,7 @@ contract RegisterHelper is AccessControl {
         address _userManager,
         address _referral,
         address payable _regFeeRecipient,
-        uint _rebateFee,
+        uint _rebate,
         uint _regFee
     ) AccessControl(_admin) {
         if (_regFeeRecipient == address(0)) revert NullAddress();
@@ -67,10 +67,10 @@ contract RegisterHelper is AccessControl {
         referral = _referral;
         IErc20(union).approve(userManager, type(uint256).max);
         regFeeRecipient = _regFeeRecipient;
-        rebateFee = _rebateFee;
+        rebate = _rebate;
         regFee = _regFee;
         emit RegFeeRecipientChange(regFeeRecipient, address(0));
-        emit RebateFeeChange(rebateFee, 0);
+        emit RebateChange(rebate, 0);
         emit RegFeeChange(regFee, 0);
     }
 
@@ -86,12 +86,12 @@ contract RegisterHelper is AccessControl {
         emit RegFeeRecipientChange(newRecipient, oldRecipient);
     }
 
-    /// @notice Sets the rebate fee amount.
-    /// @param newRebateFee The new rebate fee amount.
-    function setRebateFee(uint newRebateFee) external onlyAuth {
-        uint oldRebateFee = rebateFee;
-        rebateFee = newRebateFee;
-        emit RebateFeeChange(newRebateFee, oldRebateFee);
+    /// @notice Sets the rebate amount.
+    /// @param newRebate The new rebate amount.
+    function setRebate(uint newRebate) external onlyAuth {
+        uint oldRebate = rebate;
+        rebate = newRebate;
+        emit RebateChange(newRebate, oldRebate);
     }
 
     /// @notice Sets the registration fee amount.
@@ -110,19 +110,19 @@ contract RegisterHelper is AccessControl {
         if (IErc20(union).balanceOf(address(this)) < IUserManager(userManager).newMemberFee())
             revert NotEnoughBalance();
 
-        if (msg.value < regFee + rebateFee) revert NotEnoughFee(msg.value);
+        if (msg.value < regFee + rebate) revert NotEnoughFee(msg.value);
 
         if (msg.value > 0) {
             // only register member when the registrant supplies fees
-            if (rebateFee > 0 && referrer != address(0)) {
-                referrer.transfer(rebateFee);
-                regFeeRecipient.transfer(msg.value - rebateFee);
+            if (rebate > 0 && referrer != address(0)) {
+                referrer.transfer(rebate);
+                regFeeRecipient.transfer(msg.value - rebate);
             } else {
                 regFeeRecipient.transfer(msg.value);
             }
         }
 
         IUserManager(userManager).registerMember(newUser);
-        emit Register(newUser, regFeeRecipient, referrer, msg.value, rebateFee);
+        emit Register(newUser, regFeeRecipient, referrer, msg.value, rebate);
     }
 }
