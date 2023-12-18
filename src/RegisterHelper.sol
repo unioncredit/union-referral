@@ -47,7 +47,7 @@ contract RegisterHelper is AccessControl {
     event RegFeeRecipientChange(address newRecipient, address oldRecipient);
     event RebateChange(uint newRebate, uint oldRebate);
     event RegFeeChange(uint newRegFee, uint oldRegFee);
-    event Register(address newUser, address regFeeRecipient, address referrer, uint fee, uint rebate);
+    event Register(address newUser, address regFeeRecipient, address referrer, uint fee, uint regFee, uint rebate);
 
     /// @notice Constructor to initialize the contract with necessary addresses.
     /// @param _admin Address of the initial admin.
@@ -113,19 +113,18 @@ contract RegisterHelper is AccessControl {
             revert NotEnoughBalance();
 
         if (msg.value < regFee + rebate) revert NotEnoughFee(msg.value);
-
-        if (msg.value > 0) {
-            // only register member when the registrant supplies fees
-            if (rebate > 0 && referrer != address(0)) {
-                referrer.transfer(rebate);
-                regFeeRecipient.transfer(msg.value - rebate);
-            } else {
-                regFeeRecipient.transfer(msg.value);
-            }
+        
+        uint diff = msg.value - regFee - rebate;
+        if(referrer != address(0)) {
+            if(regFee > 0)regFeeRecipient.transfer(regFee);
+            if(rebate > 0)referrer.transfer(rebate);    
+        } else {
+            if(regFee > 0 || rebate > 0)regFeeRecipient.transfer(regFee + rebate);
         }
+        if(diff > 0)payable(msg.sender).transfer(diff);
 
         IUserManager(userManager).registerMember(newUser);
-        emit Register(newUser, regFeeRecipient, referrer, msg.value, rebate);
+        emit Register(newUser, regFeeRecipient, referrer, msg.value, regFee, rebate);
     }
 
     function claimToken(address recipient) external onlyAuth {
