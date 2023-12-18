@@ -10,6 +10,7 @@ contract TestRegisterMemberUseRegHelp is TestWrapper {
     Referral public referral;
     address public admin;
     address public comp;
+    address payable public sender;
     address payable public regFeeRecipient;
     uint public rebate;
     uint public regFee;
@@ -18,6 +19,8 @@ contract TestRegisterMemberUseRegHelp is TestWrapper {
         admin = address(1);
         comp = address(2);
         regFeeRecipient = payable(address(3));
+        sender = payable(address(4));//The default sender for testing is a contract and cannot accept eth, so we need to change the address.
+        vm.deal(sender, 100 ether);
         rebate = 5e17;
         regFee = 1e18;
         deployMocks();
@@ -42,8 +45,9 @@ contract TestRegisterMemberUseRegHelp is TestWrapper {
         address newUser = address(4);
         address payable referrer = payable(address(5));
         vm.assume(value >= rebate + regFee && value < 100e18);
+        vm.prank(sender);
         registerHelper.register{value: value}(newUser, referrer);
-        assertEq(regFeeRecipient.balance, value - rebate);
+        assertEq(regFeeRecipient.balance, regFee);
         assertEq(referrer.balance, rebate);
         assertEq(referral.referrers(newUser), referrer);
     }
