@@ -17,6 +17,8 @@ interface IErc20 {
     function balanceOf(address) external view returns (uint256);
 
     function approve(address, uint256) external returns (bool);
+
+    function transfer(address, uint256) external returns (bool);
 }
 
 /// @title Referral Interface
@@ -125,4 +127,11 @@ contract RegisterHelper is AccessControl {
         IUserManager(userManager).registerMember(newUser);
         emit Register(newUser, regFeeRecipient, referrer, msg.value, rebate);
     }
+
+    function claimToken(address recipient) external onlyAuth {
+        if (recipient== address(0)) revert NullAddress();
+        IErc20 token = IErc20(union);
+        uint256 balance = token.balanceOf(address(this));
+        token.transfer(recipient, balance);
+    } 
 }

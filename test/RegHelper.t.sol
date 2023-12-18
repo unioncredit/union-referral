@@ -143,4 +143,26 @@ contract TestRegisterHelper is TestWrapper {
         assertEq(regFeeRecipient.balance, 1e18);
         assertEq(referrer.balance, 1e18);
     }
+
+    function testCannotClaimTokenNonAdmin() public {
+        vm.expectRevert(AccessControl.NotAdmin.selector);
+        registerHelper.claimToken(admin);
+    }
+    
+    function testCannotClaimTokenWhenZeroAddress() public {
+        vm.prank(admin);
+        vm.expectRevert(AccessControl.NullAddress.selector);
+        registerHelper.claimToken(address(0));
+    }
+
+    function testClaimToken() public {
+        vm.startPrank(admin);
+        unionTokenMock.mint(1e20);
+        unionTokenMock.transfer(address(registerHelper), 1e20);
+        uint balBef = unionTokenMock.balanceOf(admin);
+        registerHelper.claimToken(admin);
+        uint balEnd = unionTokenMock.balanceOf(admin);
+        assertEq(balEnd - balBef, 1e20);
+        vm.stopPrank();
+    }
 }
