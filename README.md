@@ -71,8 +71,8 @@ forge create --rpc-url <your_rpc_url> \
 optimism-goerli
 ```
 
-Referral: 0x40006f57bf781be997da9c096668579a044f140a
-RegisterHelper: 0x1f506d05c3ab917610a2bd4ed4e7afbdb4ebecc1
+Referral: 0xbae830e2871E339D48912Fb5547808E9e0EE1aaD
+RegisterHelper: 0x5F7c58fB44f7C94c68EF4102780cab913C16b302
 
 ```
 
