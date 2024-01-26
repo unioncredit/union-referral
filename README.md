@@ -75,4 +75,4 @@ forge create --rpc-url <your_rpc_url> \
 **Optimism-Goerli:**
 
 -   Referral: [0xbae830e2871E339D48912Fb5547808E9e0EE1aaD](https://goerli-optimism.etherscan.io/address/0xbae830e2871E339D48912Fb5547808E9e0EE1aaD)
--   RegisterHelper: [0x5F7c58fB44f7C94c68EF4102780cab913C16b302](https://goerli-optimism.etherscan.io/address/0x5F7c58fB44f7C94c68EF4102780cab913C16b302)
+-   RegisterHelper: [0xC38C2Bb8eD28fb87649DF1e5f02217441b12d49D](https://goerli-optimism.etherscan.io/address/0xC38C2Bb8eD28fb87649DF1e5f02217441b12d49D)

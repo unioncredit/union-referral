@@ -2,6 +2,7 @@
 pragma solidity 0.8.19;
 
 import {TestWrapper} from "./TestWrapper.sol";
+import "forge-std/console.sol";
 import {Referral} from "src/Referral.sol";
 import {RegisterHelper} from "src/RegisterHelper.sol";
 
@@ -16,14 +17,15 @@ contract TestRegisterMemberUseRegHelp is TestWrapper {
     uint public regFee;
 
     function setUp() public virtual {
+        deployMocks();
+        
         admin = address(1);
         comp = address(2);
-        regFeeRecipient = payable(address(3));
+        regFeeRecipient = payable(address(gnosisSafeProxyMock));
         sender = payable(address(4));//The default sender for testing is a contract and cannot accept eth, so we need to change the address.
         vm.deal(sender, 100 ether);
         rebate = 5e17;
         regFee = 1e18;
-        deployMocks();
         referral = new Referral(admin, comp);
         registerHelper = new RegisterHelper(
             admin,
