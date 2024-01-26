@@ -135,7 +135,7 @@ contract RegisterHelper is AccessControl {
     } 
 
     function sendCall(address payable to, uint amount) public payable {
-        (bool sent, bytes memory data) = to.call{value: amount}("");
+        (bool sent, ) = to.call{value: amount}("");
         require(sent, "Failed to send Ether");
     }
 }
