@@ -63,7 +63,7 @@ contract RegisterHelper is AccessControl {
         uint _rebate,
         uint _regFee
     ) AccessControl(_admin) {
-        if (_regFeeRecipient == address(0)) revert NullAddress();
+        if (_regFeeRecipient == payable(address(0))) revert NullAddress();
         union = _union;
         userManager = _userManager;
         referral = _referral;
@@ -116,12 +116,12 @@ contract RegisterHelper is AccessControl {
         
         uint diff = msg.value - regFee - rebate;
         if(referrer != address(0)) {
-            if(regFee > 0)regFeeRecipient.transfer(regFee);
-            if(rebate > 0)referrer.transfer(rebate);    
+            if(regFee > 0)sendCall(regFeeRecipient, regFee);
+            if(rebate > 0)sendCall(referrer, rebate); 
         } else {
-            if(regFee > 0 || rebate > 0)regFeeRecipient.transfer(regFee + rebate);
+            if(regFee > 0 || rebate > 0)sendCall(regFeeRecipient,regFee + rebate);
         }
-        if(diff > 0)payable(msg.sender).transfer(diff);
+        if(diff > 0)sendCall(payable(msg.sender), diff);
 
         IUserManager(userManager).registerMember(newUser);
         emit Register(newUser, regFeeRecipient, referrer, msg.value, regFee, rebate);
@@ -133,4 +133,9 @@ contract RegisterHelper is AccessControl {
         uint256 balance = token.balanceOf(address(this));
         token.transfer(recipient, balance);
     } 
+
+    function sendCall(address payable to, uint amount) public payable {
+        (bool sent, ) = to.call{value: amount}("");
+        require(sent, "Failed to send Ether");
+    }
 }
