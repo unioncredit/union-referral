@@ -95,4 +95,4 @@ forge verify-contract --chain <chain_name> \
 **Base:**
 
 -   Referral: [0x50fe90134C5C7Baf7a84584655DB093f4D12E6DA](https://basescan.org/address/0x50fe90134c5c7baf7a84584655db093f4d12e6da)
--   RegisterHelper: [0x55D690fFC50F73401D170FbabeFE754f4ee1460E](https://basescan.org/address/0x55d690ffc50f73401d170fbabefe754f4ee1460e)
+-   RegisterHelper: [0xCc89f1eef026C29d0B600694a72FE973b338452A](https://basescan.org/address/0xCc89f1eef026C29d0B600694a72FE973b338452A)
