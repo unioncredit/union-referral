@@ -65,6 +65,16 @@ forge create --rpc-url <your_rpc_url> \
     src/ContractName.sol:ContractName
 ```
 
+## Verify Contracts
+
+```
+forge verify-contract --chain <chain_name> \
+    --etherscan-api-key <your_etherscan_api_key> \
+    --constructor-args $(cast abi-encode "constructor(arg_type1, arg_type2, ...)" <arg1> <arg2> ... ) \
+    <deployed_address> \
+    src/ContractName.sol:ContractName
+```
+
 ## Deployed
 
 **Optimism:**
@@ -76,3 +86,13 @@ forge create --rpc-url <your_rpc_url> \
 
 -   Referral: [0xbae830e2871E339D48912Fb5547808E9e0EE1aaD](https://goerli-optimism.etherscan.io/address/0xbae830e2871E339D48912Fb5547808E9e0EE1aaD)
 -   RegisterHelper: [0xC38C2Bb8eD28fb87649DF1e5f02217441b12d49D](https://goerli-optimism.etherscan.io/address/0xC38C2Bb8eD28fb87649DF1e5f02217441b12d49D)
+
+**Base-Sepolia:**
+
+-   Referral: [0xf883722137ECD83a6DB0407D8c1111F4e9950102](https://base-sepolia.blockscout.com/address/0xf883722137ECD83a6DB0407D8c1111F4e9950102)
+-   RegisterHelper: [0x4869F1d15772062Dc798bC0CB9A0D97c4e317688](https://base-sepolia.blockscout.com/address/0x4869F1d15772062Dc798bC0CB9A0D97c4e317688)
+
+**Base:**
+
+-   Referral: [0x50fe90134C5C7Baf7a84584655DB093f4D12E6DA](https://basescan.org/address/0x50fe90134c5c7baf7a84584655db093f4d12e6da)
+-   RegisterHelper: [0xCc89f1eef026C29d0B600694a72FE973b338452A](https://basescan.org/address/0xCc89f1eef026C29d0B600694a72FE973b338452A)
